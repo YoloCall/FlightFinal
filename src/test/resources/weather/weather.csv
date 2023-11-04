@@ -1,0 +1,11 @@
+WBAN,Date,Time,StationType,SkyCondition,SkyConditionFlag,Visibility,VisibilityFlag,WeatherType,WeatherTypeFlag,DryBulbFarenheit,DryBulbFarenheitFlag,DryBulbCelsius,DryBulbCelsiusFlag,WetBulbFarenheit,WetBulbFarenheitFlag,WetBulbCelsius,WetBulbCelsiusFlag,DewPointFarenheit,DewPointFarenheitFlag,DewPointCelsius,DewPointCelsiusFlag,RelativeHumidity,RelativeHumidityFlag,WindSpeed,WindSpeedFlag,WindDirection,WindDirectionFlag,ValueForWindCharacter,ValueForWindCharacterFlag,StationPressure,StationPressureFlag,PressureTendency,PressureTendencyFlag,PressureChange,PressureChangeFlag,SeaLevelPressure,SeaLevelPressureFlag,RecordType,RecordTypeFlag,HourlyPrecip,HourlyPrecipFlag,Altimeter,AltimeterFlag
+03011,20120101,0015,0,CLR,,10.00,,,,23,,-5.0,,15,,-9.5,,-9,,-23.0,, 24,, 5,,120,,,,21.70,,,,,,M,,AA,,,,30.43,
+03011,20120101,0035,0,CLR,,10.00,,,,21,,-6.0,,14,,-10.2,,-9,,-23.0,, 26,, 6,,130,,,,21.70,,,,,,M,,AA,,,,30.43,
+03011,20120101,0055,0,CLR,,10.00,,,,21,,-6.0,,13,,-10.5,, -13,,-25.0,, 21,, 0,,000,,,,21.71,,,,,,M,,AA,,,,30.44,
+03011,20120101,0115,0,CLR,,10.00,,,,21,,-6.0,,14,,-10.1,,-8,,-22.0,, 27,, 0,,000,,,,21.71,,,,,,M,,AA,,,,30.44,
+03011,20120101,0135,0,CLR,,10.00,,,,21,,-6.0,,13,,-10.4,, -11,,-24.0,, 23,, 0,,000,,,,21.72,,,,,,M,,AA,,,,30.45,
+03011,20120101,0155,0,CLR,,10.00,,,,21,,-6.0,,13,,-10.5,, -13,,-25.0,, 21,, 6,,130,,,,21.72,,,,,,M,,AA,,,,30.45,
+03011,20120101,0215,0,CLR,,10.00,,,,21,,-6.0,,14,,-10.2,,-9,,-23.0,, 26,, 5,,090,,,,21.73,,,,,,M,,AA,,,,30.46,
+03011,20120101,0235,0,CLR,,10.00,,,,21,,-6.0,,14,,-10.2,,-9,,-23.0,, 26,, 6,,120,,,,21.74,,,,,,M,,AA,,,,30.47,
+03011,20120101,0255,0,CLR,,10.00,,,,21,,-6.0,,13,,-10.4,, -11,,-24.0,, 23,, 7,,130,,,,21.74,,,,,,M,,AA,,,,30.48,
+03011,20120101,0315,0,CLR,,10.00,,,,23,,-5.0,,15,,-9.4,,-8,,-22.0,, 25,, 9,,120,,,,21.74,,,,,,M,,AA,,,,30.47,
