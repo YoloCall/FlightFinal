@@ -3,9 +3,7 @@ package com.dauphine.flight.ml
 import com.dauphine.flight.conf.{Constant, SparkSessionWrapper}
 import com.dauphine.flight.services.HadoopService
 import org.apache.spark.ml.classification.{DecisionTreeClassifier, RandomForestClassifier}
-import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.ml.feature.{StringIndexer, VectorAssembler}
-import org.apache.spark.mllib.evaluation.{BinaryClassificationMetrics, MulticlassMetrics}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions._
 
@@ -42,7 +40,7 @@ object PredictDelay extends SparkSessionWrapper {
     // test data set - 30%
     val seed = 42
 
-    val zeros = labelDf.filter(col("IS_DELAYED") === 0)
+    val zeros = labelDf.filter(col("IS_DELAYED") === 0).sample(0.1, seed) // on ne prend que 10% des flights qui sont à l'heure
     val ones = labelDf.filter(col("IS_DELAYED") === 1)
 
     val Array(train0, test0) = zeros.randomSplit(Array(0.7, 0.3), seed)
@@ -58,7 +56,6 @@ object PredictDelay extends SparkSessionWrapper {
       .setLabelCol("label")
       .setFeaturesCol("features")
 
-
     val decisionTreeModel = decisionTreeClassifier.fit(trainingData)
 
     val predictionDf = decisionTreeModel.transform(testData)
@@ -67,10 +64,6 @@ object PredictDelay extends SparkSessionWrapper {
       .select(col("prediction").cast("double"), col("label").cast("double"))
 
     HadoopService.writeOrcToHdfs(predictionDf, Constant.hdfsPredicRemoteOuput)
-
-    //val bMetrics = new BinaryClassificationMetrics(predictionAndLabels)
-    //val mMetrics = new MulticlassMetrics(predictionAndLabels)
-    //val labels = mMetrics.labels
 
     val truePositif = predictionDf.filter(col("prediction") === 1 && col("label") === col("prediction")).count()
     val trueNegatif = predictionDf.filter(col("prediction") === 0 && col("label") === col("prediction")).count()
@@ -118,15 +111,23 @@ object PredictDelay extends SparkSessionWrapper {
     // training data set - 70%
     // test data set - 30%
     val seed = 42
-    val Array(trainingData, testData) = labelDf.randomSplit(Array(0.7, 0.3), seed)
+
+    val zeros = labelDf.filter(col("IS_DELAYED") === 0).sample(0.1, seed) // on ne prend que 10% des flights qui sont à l'heure
+    val ones = labelDf.filter(col("IS_DELAYED") === 1)
+
+    val Array(train0, test0) = zeros.randomSplit(Array(0.7, 0.3), seed)
+    val Array(train1, test1) = ones.randomSplit(Array(0.7, 0.3), seed)
+
+    val trainingData = train0.union(train1)
+    val testData = test0.union(test1)
 
     println(f"""There are ${trainingData.count} rows in the training set, and ${testData.count} in the test set""")
 
     // train Random Forest model with training data set
     val randomForestClassifier = new RandomForestClassifier()
       .setImpurity("gini")
-      .setMaxDepth(5)
-      .setNumTrees(20)
+      .setMaxDepth(15)
+      .setNumTrees(30)
       .setFeatureSubsetStrategy("auto")
       .setSeed(seed)
       .setLabelCol("label") // indexedLabel
@@ -138,45 +139,17 @@ object PredictDelay extends SparkSessionWrapper {
 
     HadoopService.writeOrcToHdfs(predictionDf, Constant.hdfsPredicRemoteOuput)
 
-    // Select (prediction, true label) and compute test error.
-    val evaluator = new MulticlassClassificationEvaluator()
-      .setLabelCol("label") // indexedLabel
-      .setPredictionCol("prediction")
-      .setMetricName("accuracy")
-
-    val accuracy = evaluator.evaluate(predictionDf)
-
-    // Select (prediction, true label) and compute test error.
-    val precisionEvaluator = new MulticlassClassificationEvaluator()
-      .setLabelCol("label") // indexedLabel
-      .setPredictionCol("prediction")
-      .setMetricName("weightedPrecision")
-
-    val precision = precisionEvaluator.evaluate(predictionDf)
-
-    // Select (prediction, true label) and compute test error.
-    val recallEvaluator = new MulticlassClassificationEvaluator()
-      .setLabelCol("label") // indexedLabel
-      .setPredictionCol("prediction")
-      .setMetricName("weightedRecall")
-
-    val recall = recallEvaluator.evaluate(predictionDf)
-
-    // Select (prediction, true label) and compute test error.
-    val f1scoreEvaluator = new MulticlassClassificationEvaluator()
-      .setLabelCol("label") // indexedLabel
-      .setPredictionCol("prediction")
-      .setMetricName("f1")
-
-    val f1score = f1scoreEvaluator.evaluate(predictionDf)
-
     val truePositif = predictionDf.filter(col("prediction") === 1 && col("label") === col("prediction")).count()
     val trueNegatif = predictionDf.filter(col("prediction") === 0 && col("label") === col("prediction")).count()
     val falsePositif = predictionDf.filter(col("prediction") === 1 && col("label") =!= col("prediction")).count()
     val falseNegatif = predictionDf.filter(col("prediction") === 0 && col("label") =!= col("prediction")).count()
 
+    val precision = truePositif / (truePositif + falsePositif)
+    val recall = truePositif / (truePositif + falseNegatif)
+    val acc = (truePositif + trueNegatif) / (truePositif + trueNegatif + falsePositif + falseNegatif)
+    val f1score = 2 * precision * recall / (precision + recall)
 
-    println(s"Test Error = ${(1.0 - accuracy)}, Test precision = ${precision}, Test recall = ${recall}, Test f1score = ${f1score}, truePositif = ${truePositif}, trueNegatif = ${trueNegatif}, falsePositif = ${falsePositif}, falseNegatif = ${falseNegatif},")
+    println(s"Test Error = ${(1.0 - acc)}, Test precision = ${precision}, Test recall = ${recall}, Test f1score = ${f1score}, truePositif = ${truePositif}, trueNegatif = ${trueNegatif}, falsePositif = ${falsePositif}, falseNegatif = ${falseNegatif},")
 
 
   }

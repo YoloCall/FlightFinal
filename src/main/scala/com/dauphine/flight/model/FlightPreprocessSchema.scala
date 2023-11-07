@@ -1,6 +1,6 @@
 package com.dauphine.flight.model
 
-import org.apache.spark.sql.types.{FloatType, IntegerType, StringType, StructField, StructType, TimestampType}
+import org.apache.spark.sql.types.{IntegerType, StructField, StructType, TimestampType}
 
 object FlightPreprocessSchema {
 

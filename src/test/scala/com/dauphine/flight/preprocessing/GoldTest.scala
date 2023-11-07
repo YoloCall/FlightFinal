@@ -1,7 +1,7 @@
 package com.dauphine.flight.preprocessing
 
 import com.dauphine.flight.conf.SparkSessionWrapperTest
-import com.dauphine.flight.model.{FlightJoinAirport, FlightPreprocessSchema, GoldSchema, WeatherSchema}
+import com.dauphine.flight.model.{FlightJoinAirport, GoldSchema, WeatherSchema}
 import com.dauphine.flight.services.HadoopService
 import org.junit.jupiter.api.Test
 

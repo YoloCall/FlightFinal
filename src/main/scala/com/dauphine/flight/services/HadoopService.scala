@@ -1,7 +1,6 @@
 package com.dauphine.flight.services
 
 import com.dauphine.flight.conf.SparkSessionWrapper
-import com.dauphine.flight.model.{FlightPreprocessSchema, WeatherSchema}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.StructType
 
@@ -32,24 +31,9 @@ object HadoopService extends SparkSessionWrapper {
 
   }
 
-  def writeCsvToHdfs(data: DataFrame, path: String): Unit = {
-
-    data.write.option("header","true").mode("overwrite").csv(path)
-
-  }
-
   def writeOrcToHdfs(data: DataFrame, path: String): Unit = {
 
     data.write.format("orc").mode("overwrite").save(path)
-
-  }
-
-  def getOrcDataFromHdfs(path: String): DataFrame = {
-
-    val df_silver = spark.read
-      .orc(path)
-
-    df_silver
 
   }
 
